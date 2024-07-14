@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  token     String
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  mails     Mails[]
+}
+
+model Mails {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  from    String
+  to      String
+  subject String?
+  content String?
+  name    String?
+
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String   @db.ObjectId
+  createdAt DateTime @default(now())
+}
