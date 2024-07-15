@@ -6,7 +6,7 @@ dotenv.config();
 
 const UserController = {
   register: async (req, res) => {
-    const { email, token, password, name } = req.body;
+    const { email, token, password, name, adminToken } = req.body;
 
     if (!email || !password || !name || !token) {
       return res.status(400).json({ error: `Все поля обязательны!` });
@@ -20,6 +20,9 @@ const UserController = {
         return res.status(400).json({ error: `Пользователь уже существует` });
       }
 
+      const adminStatus =
+        (await adminToken) === process.env.ADMIN_KEY ? true : false;
+
       // ХЕШИРОВАНИЕ ПАРОЛЯ С ПОМОЩЬЮ БИБЛИОТЕКИ БКРИПТJS
       const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -30,6 +33,7 @@ const UserController = {
           password: hashedPassword,
           name,
           token,
+          admin: adminStatus,
         },
       });
 
