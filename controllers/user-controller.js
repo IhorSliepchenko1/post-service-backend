@@ -138,6 +138,24 @@ const UserController = {
       res.status(500).json({ error: "Internal Server Error" });
     }
   },
+
+  deleteUser: async (req, res) => {
+    const { id } = req.body;
+    if (!id) {
+      return res.status(400).json({ error: `Пользователь не найден!` });
+    }
+
+    try {
+      const deleteUser = await prisma.user.deleteMany({
+        where: { id },
+      });
+
+      res.json(deleteUser);
+    } catch (error) {
+      console.error(`Error delete User!`, error);
+      res.status(500).json({ error: `Internal Server Error` });
+    }
+  },
 };
 
 module.exports = UserController;

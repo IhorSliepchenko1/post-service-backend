@@ -12,6 +12,7 @@ router.post(`/login`, UserController.login);
 router.get(`/users/all`, authenticationToken, UserController.getUsersAll);
 router.get(`/users/:id`, authenticationToken, UserController.getUserById);
 router.put(`/users/:id`, authenticationToken, UserController.updateUser);
+router.delete(`/delete`, authenticationToken, UserController.deleteUser);
 
 // POSTS ROUTES
 router.post(`/create-mails`, authenticationToken, MailController.createMail);
