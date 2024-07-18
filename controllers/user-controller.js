@@ -6,9 +6,9 @@ dotenv.config();
 
 const UserController = {
   register: async (req, res) => {
-    const { email, token, password, name, adminToken } = req.body;
+    const { email, password, name, adminToken } = req.body;
 
-    if (!email || !password || !name || !token) {
+    if (!email || !password || !name) {
       return res.status(400).json({ error: `Все поля обязательны!` });
     }
 
@@ -32,7 +32,6 @@ const UserController = {
           email,
           password: hashedPassword,
           name,
-          token,
           admin: adminStatus,
         },
       });
