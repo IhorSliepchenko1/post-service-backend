@@ -13,7 +13,6 @@ const UserController = {
     }
 
     try {
-      // ПРОВЕРКА НА НАЛИЧИЕ В БАЗЕ КАКОГО ТО НОВОГО ПОЛЬЗОВАТЕЛЯ, В ЭТОМ СЛУЧАИ ПО ЕМЕИЛ АДРЕССУ
       const existingUser = await prisma.user.findUnique({ where: { email } });
 
       if (existingUser) {
@@ -23,10 +22,8 @@ const UserController = {
       const adminStatus =
         (await adminToken) === process.env.ADMIN_KEY ? true : false;
 
-      // ХЕШИРОВАНИЕ ПАРОЛЯ С ПОМОЩЬЮ БИБЛИОТЕКИ БКРИПТJS
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // ДОБАВЛЕНИЕ НОВОГО ПОЛЬЗОВАТЕЛЯ В БАЗУ ДАННЫХ
       const user = await prisma.user.create({
         data: {
           email,
@@ -56,7 +53,6 @@ const UserController = {
         return res.status(404).json({ error: `Неверный логин или пароль` });
       }
 
-      // ПРОВЕРКА НА ВАЛИДНОСТЬ ПАРОЛЯ
       const validPass = await bcrypt.compare(password, user.password);
 
       if (!validPass) {
@@ -107,7 +103,6 @@ const UserController = {
       res.status(500).json({ error: `Entarnal server Error` });
     }
   },
-
   getUserById: async (req, res) => {
     const { id } = req.params;
 
@@ -127,17 +122,15 @@ const UserController = {
       res.status(500).json({ error: `Internal Server Error` });
     }
   },
-
   getUsersAll: async (req, res) => {
     try {
       const users = await prisma.user.findMany();
       res.json(users);
     } catch (error) {
-      console.error("Get All Users Error", error);
-      res.status(500).json({ error: "Internal Server Error" });
+      console.error(`Get All Users Error`, error);
+      res.status(500).json({ error: `Internal Server Error` });
     }
   },
-
   deleteUser: async (req, res) => {
     const { id } = req.body;
     if (!id) {
