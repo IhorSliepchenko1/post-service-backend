@@ -6,7 +6,7 @@ dotenv.config();
 
 const UserController = {
   register: async (req, res) => {
-    const { email, password, name, adminToken } = req.body;
+    const { email, password, name, adminToken, token } = req.body;
 
     if (!email || !password || !name) {
       return res.status(400).json({ error: `Все поля обязательны!` });
@@ -30,6 +30,7 @@ const UserController = {
           password: hashedPassword,
           name,
           admin: adminStatus,
+          token,
         },
       });
 
@@ -61,7 +62,7 @@ const UserController = {
 
       const token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY);
 
-      res.json({ token });
+      res.json({ token: token, userData: user });
     } catch (error) {
       console.error(`Login error`, error);
       res.status(500).json({ error: `Internal Server Error` });
