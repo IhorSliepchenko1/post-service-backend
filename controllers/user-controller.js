@@ -8,6 +8,11 @@ const UserController = {
   register: async (req, res) => {
     const { email, password, name, adminToken, token } = req.body;
 
+    if (password.length < 6) {
+      return res
+        .status(401)
+        .json({ error: `Длинна пароля должна быть более 6 символов !` });
+    }
     if (!email || !password || !name) {
       return res.status(400).json({ error: `Все поля обязательны!` });
     }
@@ -62,10 +67,29 @@ const UserController = {
 
       const token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY);
 
-      res.json({ token: token, userData: user });
+      res.json({ token: token });
     } catch (error) {
       console.error(`Login error`, error);
       res.status(500).json({ error: `Internal Server Error` });
+    }
+  },
+  current: async (req, res) => {
+    const { email } = req.body;
+
+    try {
+      const user = await prisma.user.findFirst({
+        where: {
+          email,
+        },
+      });
+
+      if (!user) {
+        return res.status(400).json({ error: `Пользователь не найден` });
+      }
+      res.json(user);
+    } catch (error) {
+      console.error(`Get current error`, error);
+      res.status(500).json({ error: `Entarnal server Error` });
     }
   },
   updateUser: async (req, res) => {

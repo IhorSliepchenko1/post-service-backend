@@ -4,19 +4,20 @@ const router = express.Router();
 // Import controllers
 const { UserController, MailController } = require("../controllers");
 
-const authenticationToken = require("./../middleware/auth");
+// const authenticationToken = require("./../middleware/auth");
 
 // USER ROUTES
 router.post(`/register`, UserController.register);
 router.post(`/login`, UserController.login);
-router.get(`/users/all`, authenticationToken, UserController.getUsersAll);
-router.get(`/users/:id`, authenticationToken, UserController.getUserById);
-router.put(`/users/:id`, authenticationToken, UserController.updateUser);
-router.delete(`/delete`, authenticationToken, UserController.deleteUser);
+router.get(`/current`, UserController.current);
+router.get(`/users/all`, UserController.getUsersAll);
+router.get(`/users/:id`, UserController.getUserById);
+router.put(`/users/:id`, UserController.updateUser);
+router.delete(`/delete`, UserController.deleteUser);
 
 // POSTS ROUTES
-router.post(`/create-mails`, authenticationToken, MailController.createMail);
-router.get(`/mails/:id`, authenticationToken, MailController.getAllMails);
-router.get(`/mail/:id`, authenticationToken, MailController.getAllMailById);
+router.post(`/create-mails`, MailController.createMail);
+router.get(`/mails/:id`, MailController.getAllMails);
+router.get(`/mail/:id`, MailController.getAllMailById);
 
 module.exports = router;
