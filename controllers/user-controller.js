@@ -67,20 +67,20 @@ const UserController = {
 
       const token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY);
 
-      res.json({ token: token });
+      res.json({ token, userId: user.id });
     } catch (error) {
       console.error(`Login error`, error);
       res.status(500).json({ error: `Internal Server Error` });
     }
   },
   current: async (req, res) => {
-    const { email } = req.body;
+    if (!req.headers) {
+      return res.status(400).json({ error: `header is required` });
+    }
 
     try {
-      const user = await prisma.user.findFirst({
-        where: {
-          email,
-        },
+      const user = await prisma.user.findUnique({
+        where: { id: req.headers[`userid`] },
       });
 
       if (!user) {
@@ -92,6 +92,7 @@ const UserController = {
       res.status(500).json({ error: `Entarnal server Error` });
     }
   },
+
   updateUser: async (req, res) => {
     const { id } = req.params;
     const { email, token, name } = req.body;

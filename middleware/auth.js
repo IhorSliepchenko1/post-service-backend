@@ -2,8 +2,7 @@ const jwt = require(`jsonwebtoken`);
 
 // ФУНКЦИЯ ПО ПРОВЕРКЕ JWT ТОКЕНА
 const authenticationToken = (req, res, next) => {
-  const authHeader = req.headers[`authorization`];
-  const token = authHeader && authHeader.split(` `)[1];
+  const token = req.headers[`authorization`];
 
   if (!token) {
     return res.status(401).json({ error: `Пользователь не авторизован` });
