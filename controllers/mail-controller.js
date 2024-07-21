@@ -82,26 +82,25 @@ const MailController = {
   },
 
   getAllMyMails: async (req, res) => {
-    const userId = req.headers["userid"];
+    const userId = req.headers[`userid`];
 
     if (!userId) {
-      return res.status(404).json({ error: "Пользователь не обнаружен" });
+      return res.status(404).json({ error: `Пользователь не обнаружен` });
     }
 
     try {
-      const myMails = await prisma.mails.findMany({
-        where: {
-          authorId: userId,
-        },
+      const mail = await prisma.mails.findMany({
         orderBy: {
           createdAt: "desc",
         },
       });
 
+      const myMails = mail.filter((item) => item.authorId === userId);
+
       res.json(myMails);
     } catch (error) {
-      console.error("get all mails error", error);
-      res.status(500).json({ error: "Internal Server Error" });
+      console.error(`get all mails error`, error);
+      res.status(500).json({ error: `Internal Server Error` });
     }
   },
   getAllMailById: async (req, res) => {
