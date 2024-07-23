@@ -94,28 +94,24 @@ const UserController = {
   },
 
   updateUser: async (req, res) => {
-    const { id } = req.params;
-    const { email, token, name } = req.body;
+    const { email, token, name, userId } = req.body;
 
-    if (id !== req.user.userId) {
-      return res.status(403).json({ error: `нет доступа` });
-    }
+    console.log(JSON.stringify(req.body));
+    // const id = userId;
+
+    // if (id !== req.user.userId) {
+    //   return res.status(403).json({ error: `нет доступа` });
+    // }
 
     try {
-      if (email) {
-        const existingUser = await prisma.user.findFirst({
-          where: { email },
-        });
+      const existingUser = await prisma.user.findUnique({ where: { email } });
 
-        if (existingUser && existingUser.id !== id) {
-          return res
-            .status(400)
-            .json({ error: `Пользователь с таким email уже существует` });
-        }
+      if (existingUser) {
+        return res.status(400).json({ error: `Пользователь уже существует` });
       }
 
       const user = await prisma.user.update({
-        where: { id },
+        where: { id: userId },
         data: {
           email: email || undefined,
           token: token || undefined,

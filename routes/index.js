@@ -17,7 +17,7 @@ router.get(`/current`, authenticationToken, UserController.current);
 router.get(`/users/all`, UserController.getUsersAll);
 router.get(`/users/:id`, UserController.getUserById);
 
-router.put(`/users/:id`, UserController.updateUser);
+router.put(`/update-user`, authenticationToken, UserController.updateUser);
 router.delete(`/delete`, UserController.deleteUser);
 
 // POSTS ROUTES
