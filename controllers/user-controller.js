@@ -5,6 +5,7 @@ const dotenv = require(`dotenv`);
 dotenv.config();
 
 const UserController = {
+  // RABOTAET
   register: async (req, res) => {
     const { email, password, name, adminToken, token } = req.body;
 
@@ -74,13 +75,15 @@ const UserController = {
     }
   },
   current: async (req, res) => {
-    if (!req.headers) {
-      return res.status(400).json({ error: `header is required` });
+    const { id } = req.query;
+
+    if (!id) {
+      return res.status(400).json({ error: `params is required` });
     }
 
     try {
       const user = await prisma.user.findUnique({
-        where: { id: req.headers[`userid`] },
+        where: { id },
       });
 
       if (!user) {
@@ -92,16 +95,8 @@ const UserController = {
       res.status(500).json({ error: `Entarnal server Error` });
     }
   },
-
   updateUser: async (req, res) => {
     const { email, token, name, userId } = req.body;
-
-    console.log(JSON.stringify(req.body));
-    // const id = userId;
-
-    // if (id !== req.user.userId) {
-    //   return res.status(403).json({ error: `нет доступа` });
-    // }
 
     try {
       const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -125,6 +120,8 @@ const UserController = {
       res.status(500).json({ error: `Entarnal server Error` });
     }
   },
+  // RABOTAET
+
   getUserById: async (req, res) => {
     const { id } = req.params;
 
@@ -153,6 +150,7 @@ const UserController = {
       res.status(500).json({ error: `Internal Server Error` });
     }
   },
+
   deleteUser: async (req, res) => {
     const { id } = req.body;
     if (!id) {

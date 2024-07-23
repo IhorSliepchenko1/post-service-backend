@@ -2,6 +2,47 @@ const { prisma } = require(`../prisma/prisma-clients`);
 const nodemailer = require(`nodemailer`);
 
 const MailController = {
+  // RABOTAET
+  getAllMyMails: async (req, res) => {
+    const { id } = req.query;
+
+    if (!id) {
+      return res.status(404).json({ error: `Пользователь не обнаружен` });
+    }
+
+    const limit = parseInt(req.query._limit);
+    const page = parseInt(req.query._page);
+    const skip = (page - 1) * limit;
+
+    try {
+      const mail = await prisma.mails.findMany({
+        where: {
+          authorId: id,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: limit,
+        skip: skip,
+      });
+
+      const mailLength = await prisma.mails.findMany({
+        where: {
+          authorId: id,
+        },
+      });
+
+      const myMails = mail.filter((item) => item.authorId === id);
+      const myMailsLength = mailLength.filter((item) => item.authorId === id);
+
+      res.json({ mails: myMails, limit: myMailsLength.length });
+    } catch (error) {
+      console.error(`get all mails error`, error);
+      res.status(500).json({ error: `Internal Server Error` });
+    }
+  },
+  // RABOTAET
+
   createMail: async (req, res) => {
     const { from, to, subject, content, name, token, authorId } = req.body;
 
@@ -50,16 +91,17 @@ const MailController = {
       }
     });
   },
-  getAllMails: async (req, res) => {
-    const userId = req.headers[`userid`];
 
-    if (!userId) {
+  getAllMails: async (req, res) => {
+    const { id } = req.query;
+
+    if (!id) {
       return res.status(404).json({ error: `Пользователь не обнаружен` });
     }
 
     try {
       const user = await prisma.user.findUnique({
-        where: { id: userId },
+        where: { id },
       });
 
       const { admin } = user;
@@ -75,47 +117,6 @@ const MailController = {
       });
 
       res.json(mails);
-    } catch (error) {
-      console.error(`get all mails error`, error);
-      res.status(500).json({ error: `Internal Server Error` });
-    }
-  },
-
-  getAllMyMails: async (req, res) => {
-    const userId = req.headers[`userid`];
-
-    if (!userId) {
-      return res.status(404).json({ error: `Пользователь не обнаружен` });
-    }
-
-    const limit = parseInt(req.query._limit);
-    const page = parseInt(req.query._page);
-    const skip = (page - 1) * limit;
-
-    try {
-      const mail = await prisma.mails.findMany({
-        where: {
-          authorId: userId,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-        take: limit,
-        skip: skip,
-      });
-
-      const mailLength = await prisma.mails.findMany({
-        where: {
-          authorId: userId,
-        },
-      });
-
-      const myMails = mail.filter((item) => item.authorId === userId);
-      const myMailsLength = mailLength.filter(
-        (item) => item.authorId === userId
-      );
-
-      res.json({ mails: myMails, limit: myMailsLength.length });
     } catch (error) {
       console.error(`get all mails error`, error);
       res.status(500).json({ error: `Internal Server Error` });
