@@ -41,8 +41,6 @@ const MailController = {
       res.status(500).json({ error: `Internal Server Error` });
     }
   },
-  // RABOTAET
-
   createMail: async (req, res) => {
     const { from, to, subject, content, name, token, authorId } = req.body;
 
@@ -91,6 +89,7 @@ const MailController = {
       }
     });
   },
+  // RABOTAET
 
   getAllMails: async (req, res) => {
     const { id } = req.query;
@@ -122,7 +121,6 @@ const MailController = {
       res.status(500).json({ error: `Internal Server Error` });
     }
   },
-
   getAllMailById: async (req, res) => {
     const { id } = req.params;
     const authorId = req.user.userId;

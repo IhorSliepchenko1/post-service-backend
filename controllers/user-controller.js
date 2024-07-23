@@ -150,7 +150,6 @@ const UserController = {
       res.status(500).json({ error: `Internal Server Error` });
     }
   },
-
   deleteUser: async (req, res) => {
     const { id } = req.body;
     if (!id) {
