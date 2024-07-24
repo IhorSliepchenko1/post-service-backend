@@ -10,9 +10,9 @@ const MailController = {
       return res.status(404).json({ error: `Пользователь не обнаружен` });
     }
 
-    const limit = parseInt(req.query._limit);
-    const page = parseInt(req.query._page);
-    const skip = (page - 1) * limit;
+    const limit = req.query._limit ? parseInt(req.query._limit) : undefined;
+    const page = req.query._page ? parseInt(req.query._page) : 1;
+    const skip = limit ? (page - 1) * limit : undefined;
 
     try {
       const mail = await prisma.mails.findMany({
@@ -41,6 +41,7 @@ const MailController = {
       res.status(500).json({ error: `Internal Server Error` });
     }
   },
+
   createMail: async (req, res) => {
     const { from, to, subject, content, name, token, authorId } = req.body;
 
