@@ -2,46 +2,6 @@ const { prisma } = require(`../prisma/prisma-clients`);
 const nodemailer = require(`nodemailer`);
 
 const MailController = {
-  // RABOTAET
-  getAllMyMails: async (req, res) => {
-    const { id } = req.query;
-
-    if (!id) {
-      return res.status(404).json({ error: `Пользователь не обнаружен` });
-    }
-
-    const limit = req.query._limit ? parseInt(req.query._limit) : undefined;
-    const page = req.query._page ? parseInt(req.query._page) : 1;
-    const skip = limit ? (page - 1) * limit : undefined;
-
-    try {
-      const mail = await prisma.mails.findMany({
-        where: {
-          authorId: id,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-        take: limit,
-        skip: skip,
-      });
-
-      const mailLength = await prisma.mails.findMany({
-        where: {
-          authorId: id,
-        },
-      });
-
-      const myMails = mail.filter((item) => item.authorId === id);
-      const myMailsLength = mailLength.filter((item) => item.authorId === id);
-
-      res.json({ mails: myMails, limit: myMailsLength.length });
-    } catch (error) {
-      console.error(`get all mails error`, error);
-      res.status(500).json({ error: `Internal Server Error` });
-    }
-  },
-
   createMail: async (req, res) => {
     const { from, to, subject, content, name, token, authorId } = req.body;
 
@@ -90,14 +50,54 @@ const MailController = {
       }
     });
   },
-  // RABOTAET
+  getAllMyMails: async (req, res) => {
+    const { id } = req.query;
 
+    if (!id) {
+      return res.status(404).json({ error: `Пользователь не обнаружен` });
+    }
+
+    const limit = req.query._limit ? parseInt(req.query._limit) : undefined;
+    const page = req.query._page ? parseInt(req.query._page) : 1;
+    const skip = limit ? (page - 1) * limit : undefined;
+
+    try {
+      const mail = await prisma.mails.findMany({
+        where: {
+          authorId: id,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: limit,
+        skip: skip,
+      });
+
+      const mailLength = await prisma.mails.findMany({
+        where: {
+          authorId: id,
+        },
+      });
+
+      const myMails = mail.filter((item) => item.authorId === id);
+      const myMailsLength = mailLength.filter((item) => item.authorId === id);
+
+      res.json({ mails: myMails, limit: myMailsLength.length });
+    } catch (error) {
+      console.error(`get all mails error`, error);
+      res.status(500).json({ error: `Internal Server Error` });
+    }
+  },
   getAllMails: async (req, res) => {
     const { id } = req.query;
 
     if (!id) {
       return res.status(404).json({ error: `Пользователь не обнаружен` });
     }
+
+    const limit = req.query._limit ? parseInt(req.query._limit) : undefined;
+    const page = req.query._page ? parseInt(req.query._page) : 1;
+    const skip = limit ? (page - 1) * limit : undefined;
 
     try {
       const user = await prisma.user.findUnique({
@@ -107,43 +107,28 @@ const MailController = {
       const { admin } = user;
 
       if (!admin) {
-        return res.status(403).json({ error: `Недостаточно прав!` });
+        return res
+          .status(403)
+          .json({ error: `Недостаточно прав для просмотра писем` });
       }
 
       const mails = await prisma.mails.findMany({
         orderBy: {
           createdAt: "desc",
         },
+        take: limit,
+        skip: skip,
       });
 
-      res.json(mails);
+      const mailsAll = await prisma.mails.findMany({
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      res.json({ mails: mails, limit: mailsAll.length });
     } catch (error) {
       console.error(`get all mails error`, error);
-      res.status(500).json({ error: `Internal Server Error` });
-    }
-  },
-  getAllMailById: async (req, res) => {
-    const { id } = req.params;
-    const authorId = req.user.userId;
-
-    try {
-      const mail = await prisma.mails.findUnique({
-        where: { id },
-      });
-
-      if (!mail) {
-        return res.status(404).json({ error: `Письмо не найден` });
-      }
-
-      if (mail.authorId !== authorId) {
-        return res
-          .status(403)
-          .json({ error: `Недостаточно прав для просмотра письма` });
-      }
-
-      res.json(mail);
-    } catch (error) {
-      console.error(`get post by id error`, error);
       res.status(500).json({ error: `Internal Server Error` });
     }
   },
