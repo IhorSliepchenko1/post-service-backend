@@ -10,16 +10,15 @@ const authenticationToken = require("./../middleware/auth");
 router.post(`/register`, UserController.register);
 router.post(`/login`, UserController.login);
 router.get(`/current`, authenticationToken, UserController.current);
+router.put(`/update-user`, authenticationToken, UserController.updateUser);
+
 router.post(`/create-mails`, authenticationToken, MailController.createMail);
 router.get(`/my-mails`, authenticationToken, MailController.getAllMyMails);
-router.put(`/update-user`, authenticationToken, UserController.updateUser);
 router.get(`/mails`, authenticationToken, MailController.getAllMails);
 
 // NE gotowo
+router.get(`/users`, UserController.getUsersAll);
 router.delete(`/delete`, UserController.deleteUser);
-
-router.get(`/mail/:id`, MailController.getAllMailById);
-router.get(`/users/all`, UserController.getUsersAll);
 router.get(`/users/:id`, UserController.getUserById);
 
 module.exports = router;
