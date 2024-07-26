@@ -120,7 +120,6 @@ const UserController = {
       res.status(500).json({ error: `Entarnal server Error` });
     }
   },
-
   getAllUsers: async (req, res) => {
     const { id } = req.query;
 
@@ -166,7 +165,6 @@ const UserController = {
     }
   },
   // RABOTAET
-
   getUserById: async (req, res) => {
     const { id } = req.params;
 
