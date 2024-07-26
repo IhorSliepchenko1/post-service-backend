@@ -17,8 +17,7 @@ router.get(`/my-mails`, authenticationToken, MailController.getAllMyMails);
 router.get(`/mails`, authenticationToken, MailController.getAllMails);
 
 // NE gotowo
-router.get(`/users`, UserController.getUsersAll);
-router.delete(`/delete`, UserController.deleteUser);
+router.get(`/users`, UserController.getAllUsers);
 router.get(`/users/:id`, UserController.getUserById);
 
 module.exports = router;

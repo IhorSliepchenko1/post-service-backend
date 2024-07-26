@@ -120,6 +120,51 @@ const UserController = {
       res.status(500).json({ error: `Entarnal server Error` });
     }
   },
+
+  getAllUsers: async (req, res) => {
+    const { id } = req.query;
+
+    if (!id) {
+      return res.status(404).json({ error: `Пользователь не обнаружен` });
+    }
+
+    const limit = req.query._limit ? parseInt(req.query._limit) : undefined;
+    const page = req.query._page ? parseInt(req.query._page) : 1;
+    const skip = limit ? (page - 1) * limit : undefined;
+
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id },
+      });
+
+      const { admin } = user;
+
+      if (!admin) {
+        return res
+          .status(403)
+          .json({ error: `Недостаточно прав для просмотра писем` });
+      }
+
+      const users = await prisma.user.findMany({
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: limit,
+        skip: skip,
+      });
+
+      const userAll = await prisma.user.findMany({
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      res.json({ users: users, limit: userAll.length });
+    } catch (error) {
+      console.error(`get all mails error`, error);
+      res.status(500).json({ error: `Internal Server Error` });
+    }
+  },
   // RABOTAET
 
   getUserById: async (req, res) => {
@@ -138,32 +183,6 @@ const UserController = {
     } catch (error) {
       console.error(`Get Current Error`, error);
 
-      res.status(500).json({ error: `Internal Server Error` });
-    }
-  },
-  getUsersAll: async (req, res) => {
-    try {
-      const users = await prisma.user.findMany();
-      res.json(users);
-    } catch (error) {
-      console.error(`Get All Users Error`, error);
-      res.status(500).json({ error: `Internal Server Error` });
-    }
-  },
-  deleteUser: async (req, res) => {
-    const { id } = req.body;
-    if (!id) {
-      return res.status(400).json({ error: `Пользователь не найден!` });
-    }
-
-    try {
-      const deleteUser = await prisma.user.deleteMany({
-        where: { id },
-      });
-
-      res.json(deleteUser);
-    } catch (error) {
-      console.error(`Error delete User!`, error);
       res.status(500).json({ error: `Internal Server Error` });
     }
   },
