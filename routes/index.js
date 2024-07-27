@@ -15,9 +15,14 @@ router.put(`/update-user`, authenticationToken, UserController.updateUser);
 router.post(`/create-mails`, authenticationToken, MailController.createMail);
 router.get(`/my-mails`, authenticationToken, MailController.getAllMyMails);
 router.get(`/mails`, authenticationToken, MailController.getAllMails);
+router.delete(
+  `/delete-mails/:id`,
+  authenticationToken,
+  MailController.deleteAllMailsByUserId
+);
 
-// NE gotowo
 router.get(`/users`, UserController.getAllUsers);
 router.get(`/users/:id`, UserController.getUserById);
+router.delete(`/users-delete/:id`, UserController.deleteUserById);
 
 module.exports = router;

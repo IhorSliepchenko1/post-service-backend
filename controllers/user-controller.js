@@ -2,10 +2,10 @@ const { prisma } = require(`../prisma/prisma-clients`);
 const bcrypt = require(`bcryptjs`);
 const jwt = require(`jsonwebtoken`);
 const dotenv = require(`dotenv`);
+
 dotenv.config();
 
 const UserController = {
-  // RABOTAET
   register: async (req, res) => {
     const { email, password, name, adminToken, token } = req.body;
 
@@ -96,14 +96,11 @@ const UserController = {
     }
   },
   updateUser: async (req, res) => {
-    const { email, token, name, userId } = req.body;
+    const { email, token, name, userId, password } = req.body;
 
     try {
-      const existingUser = await prisma.user.findUnique({ where: { email } });
-
-      if (existingUser) {
-        return res.status(400).json({ error: `Пользователь уже существует` });
-      }
+      const hashedPassword =
+        password !== "" ? await bcrypt.hash(password, 10) : undefined;
 
       const user = await prisma.user.update({
         where: { id: userId },
@@ -111,6 +108,7 @@ const UserController = {
           email: email || undefined,
           token: token || undefined,
           name: name || undefined,
+          password: hashedPassword,
         },
       });
 
@@ -164,7 +162,6 @@ const UserController = {
       res.status(500).json({ error: `Internal Server Error` });
     }
   },
-  // RABOTAET
   getUserById: async (req, res) => {
     const { id } = req.params;
 
@@ -177,10 +174,28 @@ const UserController = {
         return res.status(404).json({ error: `Пользователь не найден` });
       }
 
-      res.json(user);
+      const mails = await prisma.mails.findMany({ where: { authorId: id } });
+
+      res.json({ user, count: mails.length });
     } catch (error) {
       console.error(`Get Current Error`, error);
 
+      res.status(500).json({ error: `Internal Server Error` });
+    }
+  },
+  deleteUserById: async (req, res) => {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(404).json({ error: `Пользователь не найден!` });
+    }
+
+    try {
+      await prisma.user.delete({ where: { id } });
+
+      res.json({ message: `user ${id} deleted` });
+    } catch (error) {
+      console.error(`Error deleting comment`, error);
       res.status(500).json({ error: `Internal Server Error` });
     }
   },

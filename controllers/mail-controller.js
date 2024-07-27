@@ -132,6 +132,26 @@ const MailController = {
       res.status(500).json({ error: `Internal Server Error` });
     }
   },
+  deleteAllMailsByUserId: async (req, res) => {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(404).json({ error: `Пользователь не найден!` });
+    }
+
+    try {
+      const mails = await prisma.mails.findMany({ where: { authorId: id } });
+
+      for (let i = 0; i < mails.length; i++) {
+        await prisma.mails.delete({ where: { id: mails[i].id } });
+      }
+
+      res.json(mails);
+    } catch (error) {
+      console.error(`Error deleting comment`, error);
+      res.status(500).json({ error: `Internal Server Error` });
+    }
+  },
 };
 
 module.exports = MailController;
