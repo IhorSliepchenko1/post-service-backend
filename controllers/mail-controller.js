@@ -25,7 +25,7 @@ const MailController = {
       text: content,
       attachments: file ? [{ path: file.path }] : [],
     };
-// C:\Users\igors\Desktop\mails\post-service-backend\uploads\Звіт - тижні.pdf
+
     transporter.sendMail(mailOptions, async (error, info) => {
       if (error) {
         return res.status(500).json({ error: "Неверный email или token" });
