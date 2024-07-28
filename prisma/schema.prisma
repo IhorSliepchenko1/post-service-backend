@@ -21,12 +21,12 @@ model User {
 model Mails {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  from    String
-  to      String
-  subject String?
-  content String?
-  name    String?
-
+  from      String
+  to        String
+  subject   String?
+  content   String?
+  name      String?
+  pdfUrl    String?
   author    User     @relation(fields: [authorId], references: [id])
   authorId  String   @db.ObjectId
   createdAt DateTime @default(now())

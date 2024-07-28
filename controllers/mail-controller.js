@@ -4,12 +4,12 @@ const nodemailer = require(`nodemailer`);
 const MailController = {
   createMail: async (req, res) => {
     const { from, to, subject, content, name, token, authorId } = req.body;
+    const file = req.file;
 
     if (!from || !token || !to) {
-      return res.status(400).json({ error: `Все поля обязательны!` });
+      return res.status(400).json({ error: "Все поля обязательны!" });
     }
 
-    // Create a transporter object
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -23,11 +23,12 @@ const MailController = {
       to: to,
       subject: subject,
       text: content,
+      attachments: file ? [{ path: file.path }] : [],
     };
 
     transporter.sendMail(mailOptions, async (error, info) => {
       if (error) {
-        return res.status(500).json({ error: `Неверный email или token` });
+        return res.status(500).json({ error: "Неверный email или token" });
       } else {
         try {
           const mails = await prisma.mails.create({
@@ -38,14 +39,14 @@ const MailController = {
               content,
               name,
               authorId,
+              pdfUrl: file ? file.filename : undefined,
             },
           });
 
           res.json(mails);
         } catch (error) {
-          res.json(mails);
-          console.error(`Ошибка базы данных`, error);
-          res.status(500).json({ error: `Ошибка базы данных` });
+          console.error("Ошибка базы данных", error);
+          res.status(500).json({ error: "Ошибка базы данных" });
         }
       }
     });
