@@ -5,7 +5,7 @@ const MailController = {
   createMail: async (req, res) => {
     const { from, to, subject, content, name, token, authorId } = req.body;
     const file = req.file;
-
+    console.log(JSON.stringify(file.path));
     if (!from || !token || !to) {
       return res.status(400).json({ error: "Все поля обязательны!" });
     }
@@ -25,7 +25,7 @@ const MailController = {
       text: content,
       attachments: file ? [{ path: file.path }] : [],
     };
-
+// C:\Users\igors\Desktop\mails\post-service-backend\uploads\Звіт - тижні.pdf
     transporter.sendMail(mailOptions, async (error, info) => {
       if (error) {
         return res.status(500).json({ error: "Неверный email или token" });

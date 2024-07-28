@@ -15,7 +15,7 @@ const storage = multer.diskStorage({
       Buffer.from(file.originalname, "binary"),
       "utf8"
     );
-    const timestampedName = `${Date.now()}-${decodedName}`;
+    const timestampedName = decodedName;
     cb(null, timestampedName);
   },
 });
@@ -40,6 +40,18 @@ router.delete(
   authenticationToken,
   MailController.deleteAllMailsByUserId
 );
+
+router.get("/download/:filename", (req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.join(__dirname, "..", uploadsDestination, filename);
+
+  res.download(filePath, filename, (err) => {
+    if (err) {
+      console.error("Ошибка при скачивании файла:", err);
+      res.status(500).send("Ошибка при скачивании файла.");
+    }
+  });
+});
 
 router.get("/users", UserController.getAllUsers);
 router.get("/users/:id", UserController.getUserById);
