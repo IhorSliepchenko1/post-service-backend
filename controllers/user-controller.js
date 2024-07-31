@@ -9,13 +9,14 @@ const UserController = {
   register: async (req, res) => {
     const { email, password, name, adminToken, token } = req.body;
 
+    if (!email || !password) {
+      return res.status(400).json({ error: `Все поля обязательны!` });
+    }
+
     if (password.length < 6) {
       return res
         .status(401)
         .json({ error: `Длинна пароля должна быть более 6 символов !` });
-    }
-    if (!email || !password) {
-      return res.status(400).json({ error: `Все поля обязательны!` });
     }
 
     try {
