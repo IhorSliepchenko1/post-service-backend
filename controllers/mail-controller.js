@@ -83,7 +83,7 @@ const MailController = {
       const myMails = mail.filter((item) => item.authorId === id);
       const myMailsLength = mailLength.filter((item) => item.authorId === id);
 
-      res.json({ mails: myMails, limit: myMailsLength.length });
+      res.json({ mails: myMails, count: myMailsLength.length });
     } catch (error) {
       console.error(`get all mails error`, error);
       res.status(500).json({ error: `Internal Server Error` });
@@ -127,7 +127,7 @@ const MailController = {
         },
       });
 
-      res.json({ mails: mails, limit: mailsAll.length });
+      res.json({ mails: mails, count: mailsAll.length });
     } catch (error) {
       console.error(`get all mails error`, error);
       res.status(500).json({ error: `Internal Server Error` });

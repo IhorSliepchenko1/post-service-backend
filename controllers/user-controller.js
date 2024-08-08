@@ -157,7 +157,7 @@ const UserController = {
         },
       });
 
-      res.json({ users: users, limit: userAll.length });
+      res.json({ users, countUsers: userAll.length });
     } catch (error) {
       console.error(`get all mails error`, error);
       res.status(500).json({ error: `Internal Server Error` });
@@ -177,7 +177,9 @@ const UserController = {
 
       const mails = await prisma.mails.findMany({ where: { authorId: id } });
 
-      res.json({ user, count: mails.length });
+      user.count = mails.length;
+
+      res.json(user);
     } catch (error) {
       console.error(`Get Current Error`, error);
 
