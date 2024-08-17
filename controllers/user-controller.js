@@ -194,9 +194,13 @@ const UserController = {
     }
 
     try {
+      const user = await prisma.user.findUnique({
+        where: { id },
+      });
+
       await prisma.user.delete({ where: { id } });
 
-      res.json({ message: `user ${id} deleted` });
+      res.json({ message: `user ${user.email} deleted` });
     } catch (error) {
       console.error(`Error deleting comment`, error);
       res.status(500).json({ error: `Internal Server Error` });
